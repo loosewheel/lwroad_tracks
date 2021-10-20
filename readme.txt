@@ -8,7 +8,7 @@ Code licence:
 LGPL 2.1
 
 Art licence:
-CC-BY-SA 3.0
+CC BY 4.0
 
 Sound licence:
 CC BY 4.0
