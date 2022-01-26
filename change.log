@@ -1,3 +1,11 @@
 
-v 0.1.0
+v0.1.0
 *	initial alpha
+
+
+v0.1.1
+*	Added boom gates
+*	Added car inventory
+*	Improved car angle and height on slopes
+*	Less horn sound
+*	Tracks use dirt sounds

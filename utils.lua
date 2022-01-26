@@ -1,4 +1,4 @@
-local utils = ...
+local utils, mod_storage = ...
 
 
 
@@ -54,9 +54,15 @@ end
 
 
 local function on_rail_step (entity, pos, distance)
+	local sound = "rev"
+
+	if math.random (20) == 10 then
+		sound = "horn"
+	end
+
 	-- Play car sound
 	if entity.sound_counter <= 0 then
-		minetest.sound_play ("car", {
+		minetest.sound_play (sound, {
 			pos = pos,
 			max_hear_distance = 40,
 			gain = 0.5
@@ -74,13 +80,131 @@ end
 
 
 
+local function store_car_inventory (inventory_id, inv)
+	local store = { }
+	local slots = inv:get_size ("main")
+
+	for i = 1, slots, 1 do
+		local stack = inv:get_stack ("main", i)
+
+		if stack then
+			store[i] = stack:to_string ()
+		end
+	end
+
+	mod_storage:set_string (inventory_id, minetest.serialize (store))
+end
+
+
+
+local function restore_car_inventory (inventory_id, inv)
+	local store = minetest.deserialize (mod_storage:get_string (inventory_id))
+
+	inv:set_size ("main", 32)
+
+	if type (store) == "table" then
+		for i = 1, #store, 1 do
+			inv:set_stack ("main", i, ItemStack (store[i]))
+		end
+	end
+end
+
+
+
+local function get_car_inventory (inventory_id)
+	local inv = nil
+
+	if inventory_id then
+		if not minetest.detached_inventories[inventory_id] then
+			inv = minetest.create_detached_inventory (inventory_id, {
+				allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+					return count
+				end,
+				allow_put = function (inv, listname, index, stack, player)
+					return stack:get_count ()
+				end,
+				allow_take = function (inv, listname, index, stack, player)
+					return stack:get_count ()
+				end,
+				on_move = function (inv, from_list, from_index, to_list, to_index, count, player)
+					store_car_inventory (inventory_id, inv)
+				end,
+				on_put = function (inv, listname, index, stack, player)
+					store_car_inventory (inventory_id, inv)
+				end,
+				on_take = function (inv, listname, index, stack, player)
+					store_car_inventory (inventory_id, inv)
+				end,
+			})
+
+			if inv then
+				restore_car_inventory (inventory_id, inv)
+			end
+		else
+			inv = minetest.get_inventory ({ type = "detached", name = inventory_id })
+		end
+	end
+
+	return inv
+end
+
+
+
+local function is_car_inventory_empty (inventory_id)
+	if inventory_id and minetest.detached_inventories[inventory_id] then
+		local inv = minetest.get_inventory ({ type = "detached", name = inventory_id })
+
+		if inv then
+			return inv:is_empty ("main")
+		end
+	end
+
+	return true
+end
+
+
+
+local function remove_car_inventory (inventory_id)
+	if minetest.detached_inventories[inventory_id] then
+		minetest.remove_detached_inventory (inventory_id)
+	end
+
+	local tab = mod_storage:to_table ()
+	tab.fields[inventory_id] = nil
+	mod_storage:from_table (tab)
+end
+
+
+
+local function display_car_inventory (inventory_id, playername)
+	if not get_car_inventory (inventory_id) then
+		return
+	end
+
+	local spec =
+	"formspec_version[3]\n"..
+	"size[11.75,12.75;true]\n"..
+	"list[detached:"..inventory_id..";main;1.0,1.0;8,4;]\n"..
+	"list[current_player;main;1.0,7.0;8,4;]\n"..
+	"listring[]"
+
+	minetest.show_formspec (playername, "lwroad_tracks:car_inventory", spec)
+end
+
+
+
 local function on_rightclick (self, clicker)
 	if not clicker or not clicker:is_player () then
 		return
 	end
 
 	local player_name = clicker:get_player_name ()
-	if self.driver and player_name == self.driver then
+
+	-- INV
+	if clicker:get_player_control ().sneak then
+		display_car_inventory (self.inventory_id, player_name)
+
+	elseif self.driver and player_name == self.driver then
 		self.driver = nil
 		boost_cart:manage_attachment (clicker, nil)
 
@@ -118,6 +242,7 @@ local function on_activate (self, staticdata, dtime_s)
 	self.itemname = data.itemname
 	self.texture = data.texture
 	self.texture_stop = data.texture_stop
+	self.inventory_id = data.inventory_id
 
 	-- Correct the position when the cart drives further after the last 'step()'
 	if self.old_pos and boost_cart:is_rail (self.old_pos, self.railtype) then
@@ -134,7 +259,8 @@ local function get_staticdata (self)
 		old_pos = self.old_pos,
 		itemname = self.itemname,
 		texture = self.texture,
-		texture_stop = self.texture_stop
+		texture_stop = self.texture_stop,
+		inventory_id = self.inventory_id
 	})
 end
 
@@ -173,6 +299,11 @@ local function on_punch (self, puncher, time_from_last_punch, tool_capabilities,
 	end
 
 	if puncher:get_player_control ().sneak then
+		-- INV
+		if not is_car_inventory_empty (self.inventory_id) then
+			return
+		end
+
 		-- Pick up cart: Drop all attachments
 		if self.driver then
 			if self.old_pos then
@@ -189,10 +320,22 @@ local function on_punch (self, puncher, time_from_last_punch, tool_capabilities,
 			end
 		end
 
-		local leftover = puncher:get_inventory ():add_item ("main", self.itemname)
-		if not leftover:is_empty () then
-			minetest.add_item (pos, leftover)
+		local player_inv = puncher:get_inventory ()
+
+		if minetest.settings:get_bool ("creative_mode") then
+			if not player_inv:contains_item ("main", self.itemname) then
+				player_inv:add_item ("main", self.itemname)
+			end
+		else
+			local leftover = player_inv:add_item ("main", self.itemname)
+
+			if not leftover:is_empty () then
+				minetest.add_item (pos, leftover)
+			end
 		end
+
+		-- INV
+		remove_car_inventory (self.inventory_id)
 
 		self.object:remove ()
 
@@ -276,6 +419,11 @@ local function on_step (self, dtime)
 	local cart_dir = boost_cart:velocity_to_dir (vel)
 	local same_dir = vector.equals (cart_dir, self.old_dir)
 	local update = {}
+
+	-- Correct from slope position
+	if self.old_dir.y ~= 0 then
+		pos.y = pos.y - 0.707
+	end
 
 	if (self.old_pos and not self.punched and same_dir) and not (ctrl and ctrl.up) then
 		local flo_pos = vector.round (pos)
@@ -398,21 +546,22 @@ local function on_step (self, dtime)
 		if acc ~= false then
 			-- Handbrake
 			if ctrl and ctrl.down then
-				acc = (acc or 0) - 2
+				acc = (acc or 0) - 2.5
 				brakes_on = true
 			elseif ctrl and ctrl.up then
-				acc = (acc or 0) + 2
+				acc = (acc or 0) + 2.5
 			elseif acc == nil then
 				acc = -0.4
 			end
 		end
 
-		if ctrl and ctrl.sneak then
-			-- Descend when sneak is pressed
-			boost_cart:manage_attachment (player, nil)
-			player = nil
-			ctrl = nil
-		end
+		-- Need sneak for inventory
+		--if ctrl and ctrl.sneak then
+			---- Descend when sneak is pressed
+			--boost_cart:manage_attachment (player, nil)
+			--player = nil
+			--ctrl = nil
+		--end
 
 		if acc then
 			-- Slow down or speed up, depending on Y direction
@@ -481,6 +630,7 @@ local function on_step (self, dtime)
 		return
 	end
 
+
 	-- Re-use "dir", localize self.old_dir
 	dir = self.old_dir
 
@@ -493,35 +643,28 @@ local function on_step (self, dtime)
 		yaw = 1
 	end
 
-	self.object:set_yaw (yaw * math.pi)
-
-
-	local anim = { x = 0, y = 0 }
-
-	if dir.y == -1 then
-		anim = { x = 1, y = 1 }
-	elseif dir.y == 1 then
-		anim = { x = 2, y = 2 }
+	local pitch = 0
+	if dir.y > 0 then
+		pitch = 0.25
+	elseif dir.y < 0 then
+		pitch = -0.25
 	end
 
-	self.object:set_animation (anim, 1, 0)
+	self.object:set_rotation ({ x = pitch * math.pi, y = yaw * math.pi, z = 0 })
 
+	-- Adjust height for slopes
+	if update.pos and dir.y ~= 0 then
+		pos.y = pos.y + 0.707
+	end
 
 	-- Change player model rotation, depending on the Y direction
 	if player and dir.y ~= old_y_dir then
-		local feet = { x = 0, y = -4, z = 0 }
-		local eye = { x = 0, y = -4, z = 0 }
+		local eye = { x = 0, y = -4, z = dir.y * -6 }
 
-		if dir.y ~= 0 then
-			-- TODO: Find a better way to calculate this
-			feet.y = feet.y + 4
-			feet.z = -dir.y * 2
+		player:set_attach (self.object, "",
+								 { x = 0, y = -4, z = 0 },
+								 { x = dir.y * 10, y = 0, z = 0 } )
 
-			eye.z = -dir.y * 8
-		end
-
-		player:set_attach (self.object, "", feet,
-								 { x = dir.y * -30, y = 0, z =0 } )
 		player:set_eye_offset (eye, eye)
 	end
 
@@ -592,12 +735,18 @@ function utils.register_car (itemname, name, mesh, texture, texture_stop,
 				return
 			end
 
+			local obj = nil
+
 			if boost_cart:is_rail (pointed_thing.under) then
-				minetest.add_entity (pointed_thing.under, itemname)
+				obj = minetest.add_entity (pointed_thing.under, itemname)
 			elseif boost_cart:is_rail (pointed_thing.above) then
-				minetest.add_entity (pointed_thing.above, itemname)
+				obj = minetest.add_entity (pointed_thing.above, itemname)
 			else
 				return
+			end
+
+			if obj then
+				obj:get_luaentity ().inventory_id = "lwroad_tracks_car_"..tostring (math.random (1000000))
 			end
 
 			if not minetest.settings:get_bool ("creative_mode") then

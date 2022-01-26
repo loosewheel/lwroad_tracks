@@ -16,7 +16,7 @@ CC BY 4.0
 
 Version
 =======
-0.1.0
+0.1.1
 
 
 Minetest Version
@@ -59,11 +59,19 @@ key to start and accelerate.
 
 Controls:
 Right click - mount/dismount.
+Sneak+Right click - open car inventory.
 Punch - start/accelerate.
-Sneak+Punch - Dig.
+Sneak+Punch - Dig (will not dig if inventory is not empty).
 Up/forward (W) - start/accelerate.
 Down/Back (S) - decelerate/stop.
 Left (A) - turn left (if track allows).
 Right (D) - turn right (if track allows).
+
+Boom gates can only be placed on flat straight track. Tracks do not
+automatically connect to boom gates, the layout of tracks must be led up
+to it. Boom gate rotation depends on player direction when placed. Boom
+gates can be toggled opened and closed by right clicking or with a
+mesecons' power pulse. Mesecons boom gates are only open when mesecons
+power is applied.
 
 See boost_cart settings for mod settings that effect this mod.

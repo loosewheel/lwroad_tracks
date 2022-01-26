@@ -44,8 +44,18 @@ minetest.register_craft({
 
 
 
+minetest.register_craft ({
+	output = "lwroad_tracks:boom_gate",
+	recipe = {
+		{"group:stick", "group:stick", "group:stick"},
+		{"", "lwroad_tracks:track", ""},
+	},
+})
+
+
+
 -- only if msescons loaded
-if mesecon then
+if minetest.global_exists ("mesecon") then
 
 minetest.register_craft ({
 	output = "lwroad_tracks:detectortrack 8",
@@ -53,6 +63,16 @@ minetest.register_craft ({
 		{"default:dirt", "mesecons:wire_00000000_off", "default:gravel"},
 		{"default:dirt", "group:stick", "default:gravel"},
 		{"default:dirt", "mesecons:wire_00000000_off", "default:gravel"},
+	},
+})
+
+
+
+minetest.register_craft ({
+	output = "lwroad_tracks:boom_gate_mesecons",
+	recipe = {
+		{"mesecons:wire_00000000_off"},
+		{"lwroad_tracks:boom_gate"},
 	},
 })
 

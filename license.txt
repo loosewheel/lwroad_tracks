@@ -14,7 +14,7 @@ See the GNU Lesser General Public License for more details:
 https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
 
-car.1.ogg, car.2.ogg, car.3.ogg
+rev.ogg, horn.ogg
 -------------------------------
 derived from https://www.freesoundslibrary.com/ahooga-horn/
 and https://www.freesoundslibrary.com/car-engine-tuning-and-leaving-2/
