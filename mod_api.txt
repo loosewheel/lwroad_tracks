@@ -1,0 +1,45 @@
+
+lwroad_tracks.version ()
+	Returns the version string of the mod. eg. "0.1.2".
+
+
+lwroad_tracks.register_car (itemname, name, mesh, texture, texture_stop,
+									 texture_top, texture_front, texture_side)
+	Registers a car.
+
+	itemname:		The minetest item name for the car. eg. "mymod:mycar"
+	name:				The descriptive name for the car. eg. "My Car"
+	mesh:				The mesh for the car. Can use "lwroads_car.obj". Copy
+						textures and edit. The front of the mesh must face -z, and
+						the origin should be at 0.5, 0.5, 0.5 of the model.
+	texture:			Texture for the mesh.
+	texture_stop:	Overlay texture when brake is applied (S key). nil for none.
+	texture_top:	Top image of inventory cube.
+	texture_front:	Front image of inventory cube. Also wield item.
+	texture_side:	Side image of inventory cube.
+
+
+lwroad_tracks.register_track (name, def)
+	Registers a track.
+
+	name:		The minetest item name for the track. eg. "mymod:mytrack"
+	def:		Definition for track node. tiles must be as for minetest raillike
+				drawtype. Groups should be gained with the lwroad_tracks.get_track_groups
+				function.
+
+
+lwroad_tracks.get_track_groups (additional_groups)
+	Returns the groups table for a track item. The following groups are defined:
+	attached_node = 1
+	lwroads_track = 1
+	connect_to_raillike = <n> (n is allocated by minetest)
+
+	additional_groups:	A table of additional groups to add to the returned
+								groups table.
+
+
+lwroad_tracks.boost_track (pos, amount)
+	Sets the boost value for a track at the given position.
+
+	pos:		The position of the track.
+	amount:	The amount of boost to apply. "halt" to stop cars.

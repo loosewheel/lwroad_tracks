@@ -1,7 +1,4 @@
-local version = "0.1.1"
-
-
-if boost_cart and dye then
+local version = "0.1.2"
 local mod_storage = minetest.get_mod_storage ()
 
 
@@ -18,17 +15,17 @@ end
 
 local utils = { }
 
+utils.modpath = minetest.get_modpath ("lwroad_tracks")
+
+loadfile (utils.modpath.."/settings.lua") (utils)
+loadfile (utils.modpath.."/utils.lua") (utils, mod_storage)
+loadfile (utils.modpath.."/utils_tracks.lua") (utils, mod_storage)
+loadfile (utils.modpath.."/utils_cars.lua") (utils, mod_storage)
+loadfile (utils.modpath.."/tracks.lua") (utils)
+loadfile (utils.modpath.."/cars.lua") (utils)
+loadfile (utils.modpath.."/traffic_light.lua") (utils)
+loadfile (utils.modpath.."/crafting.lua") (utils)
 
 
-modpath = minetest.get_modpath ("lwroad_tracks")
-
-loadfile (modpath.."/utils.lua") (utils, mod_storage)
-loadfile (modpath.."/tracks.lua") (utils)
-loadfile (modpath.."/cars.lua") (utils)
-loadfile (modpath.."/crafting.lua") (utils)
-
-
-
-end
 
 --

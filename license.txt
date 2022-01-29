@@ -13,8 +13,10 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 See the GNU Lesser General Public License for more details:
 https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
+Code in this mod is adapted from the boost_carts code.
 
-rev.ogg, horn.ogg
+
+lwroads_rev.ogg, lwroads_horn.ogg
 -------------------------------
 derived from https://www.freesoundslibrary.com/ahooga-horn/
 and https://www.freesoundslibrary.com/car-engine-tuning-and-leaving-2/

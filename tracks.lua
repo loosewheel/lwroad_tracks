@@ -3,42 +3,42 @@ local S = utils.S
 
 
 
-boost_cart:register_rail ("lwroad_tracks:track", {
+lwroad_tracks.register_track ("lwroad_tracks:track", {
 	description = S("Road Track"),
 	tiles = {
-		"track_straight.png", "track_curved.png",
-		"track_t_junction.png", "track_crossing.png"
+		"lwroads_track_straight.png", "lwroads_track_curved.png",
+		"lwroads_track_t_junction.png", "lwroads_track_crossing.png"
 	},
-	groups = boost_cart:get_rail_groups (),
-	sounds = default.node_sound_dirt_defaults ()
+	groups = lwroad_tracks.get_track_groups ({ dig_immediate = 2 }),
 })
 
 
 
 -- Power track
-boost_cart:register_rail ("lwroad_tracks:powertrack", {
-	description = S("Powered track"),
+lwroad_tracks.register_track ("lwroad_tracks:powertrack", {
+	description = S("Powered Track"),
 	tiles = {
-		"powertrack_straight.png", "powertrack_curved.png",
-		"powertrack_t_junction.png", "powertrack_crossing.png"
+		"lwroads_powertrack_straight.png", "lwroads_powertrack_curved.png",
+		"lwroads_powertrack_t_junction.png", "lwroads_powertrack_crossing.png"
 	},
-	groups = boost_cart:get_rail_groups (),
-	sounds = default.node_sound_dirt_defaults (),
+	groups = lwroad_tracks.get_track_groups ({ dig_immediate = 2 }),
 
 	after_place_node = function (pos, placer, itemstack)
 		if not mesecon then
-			minetest.get_meta (pos):set_string ("cart_acceleration", "0.5")
+			minetest.get_meta (pos):set_string ("lwroads_acceleration", "0.5")
 		end
 	end,
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_on = function (pos, node)
-				boost_cart:boost_rail (pos, 0.5)
+				lwroad_tracks.boost_track (pos, 0.5)
 			end,
 
 			action_off = function (pos, node)
-				minetest.get_meta (pos):set_string ("cart_acceleration", "0")
+				minetest.get_meta (pos):set_string ("lwroads_acceleration", "0")
 			end,
 		},
 	},
@@ -47,29 +47,30 @@ boost_cart:register_rail ("lwroad_tracks:powertrack", {
 
 
 -- Brake track
-boost_cart:register_rail ("lwroad_tracks:braketrack", {
-	description = S("Brake track"),
+lwroad_tracks.register_track ("lwroad_tracks:braketrack", {
+	description = S("Brake Track"),
 	tiles = {
-		"braketrack_straight.png", "braketrack_curved.png",
-		"braketrack_t_junction.png", "braketrack_crossing.png"
+		"lwroads_braketrack_straight.png", "lwroads_braketrack_curved.png",
+		"lwroads_braketrack_t_junction.png", "lwroads_braketrack_crossing.png"
 	},
-	groups = boost_cart:get_rail_groups (),
-	sounds = default.node_sound_dirt_defaults (),
+	groups = lwroad_tracks.get_track_groups ({ dig_immediate = 2 }),
 
 	after_place_node = function (pos, placer, itemstack)
 		if not mesecon then
-			minetest.get_meta (pos):set_string ("cart_acceleration", "-0.3")
+			minetest.get_meta (pos):set_string ("lwroads_acceleration", "-0.3")
 		end
 	end,
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_on = function (pos, node)
-				minetest.get_meta (pos):set_string ("cart_acceleration", "-0.3")
+				minetest.get_meta (pos):set_string ("lwroads_acceleration", "-0.3")
 			end,
 
 			action_off = function (pos, node)
-				minetest.get_meta (pos):set_string ("cart_acceleration", "0")
+				minetest.get_meta (pos):set_string ("lwroads_acceleration", "0")
 			end,
 		},
 	},
@@ -78,38 +79,35 @@ boost_cart:register_rail ("lwroad_tracks:braketrack", {
 
 
 -- Start/Stop track
-boost_cart:register_rail ("lwroad_tracks:startstoptrack", {
-	description = S("Start-stop track"),
+lwroad_tracks.register_track ("lwroad_tracks:startstoptrack", {
+	description = S("Start-Stop Track"),
 	tiles = {
-		"startstoptrack_straight.png", "startstoptrack_curved.png",
-		"startstoptrack_t_junction.png", "startstoptrack_crossing.png"
+		"lwroads_startstoptrack_straight.png", "lwroads_startstoptrack_curved.png",
+		"lwroads_startstoptrack_t_junction.png", "lwroads_startstoptrack_crossing.png"
 	},
-	groups = boost_cart:get_rail_groups (),
-	sounds = default.node_sound_dirt_defaults (),
+	groups = lwroad_tracks.get_track_groups ({ dig_immediate = 2 }),
 
 	after_place_node = function (pos, placer, itemstack)
 		if not mesecon then
-			minetest.get_meta (pos):set_string ("cart_acceleration", "halt")
+			minetest.get_meta (pos):set_string ("lwroads_acceleration", "halt")
 		end
 	end,
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_on = function (pos, node)
-				boost_cart:boost_rail (pos, 0.5)
+				lwroad_tracks.boost_track (pos, 0.5)
 			end,
 
 			action_off = function (pos, node)
-				minetest.get_meta (pos):set_string ("cart_acceleration", "halt")
+				minetest.get_meta (pos):set_string ("lwroads_acceleration", "halt")
 			end,
 		},
 	},
 })
 
-
-
-local boom_gate_groups = boost_cart:get_rail_groups ({ not_in_creative_inventory = 1, choppy = 2 })
-boom_gate_groups.dig_immediate = nil
 
 
 -- Boom gate
@@ -123,16 +121,16 @@ minetest.register_node ("lwroad_tracks:boom_gate_open", {
 		}
 	},
 	tiles = {
-		"lwboom_top.png", "lwboom_top.png",
-		"lwboom_side.png", "lwboom_side.png",
-		"lwboom_front.png", "lwboom_front.png"
+		"lwroads_boom_top.png", "lwroads_boom_top.png",
+		"lwroads_boom_side.png", "lwroads_boom_side.png",
+		"lwroads_boom_front.png", "lwroads_boom_front.png"
 	},
 	paramtype = "light",
 	paramtype2 = "facedir",
 	sunlight_propagates = true,
 	is_ground_content = false,
 	walkable = true,
-	use_texture_alpha = "blend",
+	use_texture_alpha = "clip",
 	selection_box = {
 		type = "fixed",
 		fixed = {
@@ -146,7 +144,7 @@ minetest.register_node ("lwroad_tracks:boom_gate_open", {
 		}
 	},
 	sounds = default.node_sound_dirt_defaults (),
-	groups = boom_gate_groups,
+	groups = lwroad_tracks.get_track_groups ({ not_in_creative_inventory = 1, choppy = 2 }),
 	drop = "lwroad_tracks:boom_gate",
 
 	on_rightclick = function (pos, node, clicker, itemstack, pointed_thing)
@@ -156,6 +154,8 @@ minetest.register_node ("lwroad_tracks:boom_gate_open", {
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_on = function (pos, node)
 				minetest.swap_node (pos, { name = "lwroad_tracks:boom_gate",
 													param1 = node.param1, param2 = node.param2 })
@@ -169,9 +169,9 @@ minetest.register_node ("lwroad_tracks:boom_gate_open", {
 minetest.register_node ("lwroad_tracks:boom_gate", {
 	description = S("Boom Gate"),
 	tiles = {
-		"lwboom_top.png", "lwboom_top.png",
-		"lwboom_side.png", "lwboom_side.png",
-		"lwboom_front.png", "lwboom_front.png"
+		"lwroads_boom_top.png", "lwroads_boom_top.png",
+		"lwroads_boom_side.png", "lwroads_boom_side.png",
+		"lwroads_boom_front.png", "lwroads_boom_front.png"
 	},
 	groups = { choppy = 2 },
 	paramtype = "light",
@@ -179,7 +179,7 @@ minetest.register_node ("lwroad_tracks:boom_gate", {
 	sunlight_propagates = true,
 	is_ground_content = false,
 	walkable = true,
-	use_texture_alpha = "blend",
+	use_texture_alpha = "clip",
 	drawtype = "nodebox",
 	node_box = {
 		type = "fixed",
@@ -202,7 +202,7 @@ minetest.register_node ("lwroad_tracks:boom_gate", {
 			{-0.5, 0.25, -0.125, 0.5, 0.5, 0.125},
 		}
 	},
-	sounds = default.node_sound_dirt_defaults (),
+	sounds = default.node_sound_wood_defaults (),
 
 	on_rightclick = function (pos, node, clicker, itemstack, pointed_thing)
 		minetest.swap_node (pos, { name = "lwroad_tracks:boom_gate_open",
@@ -211,6 +211,8 @@ minetest.register_node ("lwroad_tracks:boom_gate", {
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_on = function (pos, node)
 				minetest.swap_node (pos, { name = "lwroad_tracks:boom_gate_open",
 													param1 = node.param1, param2 = node.param2 })
@@ -222,38 +224,37 @@ minetest.register_node ("lwroad_tracks:boom_gate", {
 
 
 -- only if mesecons loaded
-if minetest.global_exists ("mesecon") then
+if utils.mesecons_supported then
 
 
 -- Detector track
-boost_cart:register_rail ("lwroad_tracks:detectortrack", {
-	description = "Detector track",
+lwroad_tracks.register_track ("lwroad_tracks:detectortrack", {
+	description = "Detector Track",
 	tiles = {
-		"detectortrack_straight.png", "detectortrack_curved.png",
-		"detectortrack_t_junction.png", "detectortrack_crossing.png"
+		"lwroads_detectortrack_straight.png", "lwroads_detectortrack_curved.png",
+		"lwroads_detectortrack_t_junction.png", "lwroads_detectortrack_crossing.png"
 	},
-	groups = boost_cart:get_rail_groups ({ detector_rail = 1 }),
-	sounds = default.node_sound_dirt_defaults (),
+	groups = lwroad_tracks.get_track_groups ({ dig_immediate = 2, detector_rail = 1 }),
 
-	mesecons = { receptor = { state = "off", rules = mesecon.rules.flat } },
+	mesecons = { receptor = { state = "off", rules = utils.mesecons_rules } },
 })
 
 
 
-boost_cart:register_rail ("lwroad_tracks:detectortrack_on", {
-	description = "Detector track",
+lwroad_tracks.register_track ("lwroad_tracks:detectortrack_on", {
+	description = "Detector Track",
 	tiles = {
-		"detectortrack_on_straight.png", "detectortrack_on_curved.png",
-		"detectortrack_on_t_junction.png", "detectortrack_on_crossing.png"
+		"lwroads_detectortrack_on_straight.png", "lwroads_detectortrack_on_curved.png",
+		"lwroads_detectortrack_on_t_junction.png", "lwroads_detectortrack_on_crossing.png"
 	},
-	groups = boost_cart:get_rail_groups({
+	groups = lwroad_tracks.get_track_groups ({
+		dig_immediate = 2,
 		detector_rail = 1,
 		not_in_creative_inventory = 1
 	}),
-	sounds = default.node_sound_dirt_defaults (),
 	drop = "lwroad_tracks:detectortrack",
 
-	mesecons = { receptor = { state = "on", rules = mesecon.rules.flat } },
+	mesecons = { receptor = { state = "on", rules = utils.mesecons_rules } },
 })
 
 
@@ -269,16 +270,16 @@ minetest.register_node ("lwroad_tracks:boom_gate_mesecons_open", {
 		}
 	},
 	tiles = {
-		"lwboom_mesecons_top.png", "lwboom_mesecons_top.png",
-		"lwboom_mesecons_side.png", "lwboom_mesecons_side.png",
-		"lwboom_mesecons_front.png", "lwboom_mesecons_front.png"
+		"lwroads_boom_mesecons_top.png", "lwroads_boom_mesecons_top.png",
+		"lwroads_boom_mesecons_side.png", "lwroads_boom_mesecons_side.png",
+		"lwroads_boom_mesecons_front.png", "lwroads_boom_mesecons_front.png"
 	},
 	paramtype = "light",
 	paramtype2 = "facedir",
 	sunlight_propagates = true,
 	is_ground_content = false,
 	walkable = true,
-	use_texture_alpha = "blend",
+	use_texture_alpha = "clip",
 	selection_box = {
 		type = "fixed",
 		fixed = {
@@ -292,11 +293,13 @@ minetest.register_node ("lwroad_tracks:boom_gate_mesecons_open", {
 		}
 	},
 	sounds = default.node_sound_dirt_defaults (),
-	groups = boom_gate_groups,
+	groups = lwroad_tracks.get_track_groups ({ not_in_creative_inventory = 1, choppy = 2 }),
 	drop = "lwroad_tracks:boom_gate_mesecons",
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_off = function (pos, node)
 				minetest.swap_node (pos, { name = "lwroad_tracks:boom_gate_mesecons",
 													param1 = node.param1, param2 = node.param2 })
@@ -310,9 +313,9 @@ minetest.register_node ("lwroad_tracks:boom_gate_mesecons_open", {
 minetest.register_node ("lwroad_tracks:boom_gate_mesecons", {
 	description = S("Mesecons Boom Gate"),
 	tiles = {
-		"lwboom_mesecons_top.png", "lwboom_mesecons_top.png",
-		"lwboom_mesecons_side.png", "lwboom_mesecons_side.png",
-		"lwboom_mesecons_front.png", "lwboom_mesecons_front.png"
+		"lwroads_boom_mesecons_top.png", "lwroads_boom_mesecons_top.png",
+		"lwroads_boom_mesecons_side.png", "lwroads_boom_mesecons_side.png",
+		"lwroads_boom_mesecons_front.png", "lwroads_boom_mesecons_front.png"
 	},
 	groups = { choppy = 2 },
 	paramtype = "light",
@@ -320,7 +323,7 @@ minetest.register_node ("lwroad_tracks:boom_gate_mesecons", {
 	sunlight_propagates = true,
 	is_ground_content = false,
 	walkable = true,
-	use_texture_alpha = "blend",
+	use_texture_alpha = "clip",
 	drawtype = "nodebox",
 	node_box = {
 		type = "fixed",
@@ -343,10 +346,12 @@ minetest.register_node ("lwroad_tracks:boom_gate_mesecons", {
 			{-0.5, 0.25, -0.125, 0.5, 0.5, 0.125},
 		}
 	},
-	sounds = default.node_sound_dirt_defaults (),
+	sounds = default.node_sound_wood_defaults (),
 
 	mesecons = {
 		effector = {
+			rules = utils.mesecons_rules,
+
 			action_on = function (pos, node)
 				minetest.swap_node (pos, { name = "lwroad_tracks:boom_gate_mesecons_open",
 													param1 = node.param1, param2 = node.param2 })
@@ -356,7 +361,110 @@ minetest.register_node ("lwroad_tracks:boom_gate_mesecons", {
 })
 
 
+
+-- Mesecons stop line
+minetest.register_node ("lwroad_tracks:stop_line_go", {
+	description = S("Stop Line"),
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.485, 0.5},
+		}
+	},
+	tiles = {
+		"lwroads_stop_line.png", "lwroads_blank.png",
+		"lwroads_blank.png", "lwroads_blank.png",
+		"lwroads_blank.png", "lwroads_blank.png"
+	},
+	paramtype = "light",
+	paramtype2 = "facedir",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	walkable = true,
+	use_texture_alpha = "clip",
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.4375, 0.5},
+		}
+	},
+	collision_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.4999, 0.5},
+		}
+	},
+	sounds = default.node_sound_dirt_defaults (),
+	groups = lwroad_tracks.get_track_groups ({ not_in_creative_inventory = 1, dig_immediate = 2 }),
+	drop = "lwroad_tracks:stop_line",
+
+	mesecons = {
+		effector = {
+			rules = utils.mesecons_rules,
+
+			action_off = function (pos, node)
+				minetest.swap_node (pos, { name = "lwroad_tracks:stop_line",
+													param1 = node.param1, param2 = node.param2 })
+			end,
+		},
+	},
+})
+
+
+
+minetest.register_node ("lwroad_tracks:stop_line", {
+	description = S("Stop Line"),
+	tiles = {
+		"lwroads_stop_line.png", "lwroads_blank.png",
+		"lwroads_blank.png", "lwroads_blank.png",
+		"lwroads_blank.png", "lwroads_blank.png"
+	},
+	wield_image = "lwroads_stop_line.png",
+	inventory_image = "lwroads_stop_line.png",
+	groups = { dig_immediate = 2 },
+	paramtype = "light",
+	paramtype2 = "facedir",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	walkable = true,
+	use_texture_alpha = "clip",
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.485, 0.5},
+		}
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.4375, 0.5},
+		}
+	},
+	collision_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.4999, 0.5},
+		}
+	},
+	sounds = default.node_sound_wood_defaults (),
+
+	mesecons = {
+		effector = {
+			rules = utils.mesecons_rules,
+
+			action_on = function (pos, node)
+				minetest.swap_node (pos, { name = "lwroad_tracks:stop_line_go",
+													param1 = node.param1, param2 = node.param2 })
+			end,
+		},
+	},
+})
+
+
 end -- mesecons loaded
+
 
 
 --

@@ -55,7 +55,7 @@ minetest.register_craft ({
 
 
 -- only if msescons loaded
-if minetest.global_exists ("mesecon") then
+if utils.mesecons_supported then
 
 minetest.register_craft ({
 	output = "lwroad_tracks:detectortrack 8",
@@ -73,6 +73,26 @@ minetest.register_craft ({
 	recipe = {
 		{"mesecons:wire_00000000_off"},
 		{"lwroad_tracks:boom_gate"},
+	},
+})
+
+
+
+minetest.register_craft ({
+	output = "lwroad_tracks:stop_line",
+	recipe = {
+		{"lwroad_tracks:track", "dye:white"},
+	},
+})
+
+
+
+minetest.register_craft ({
+	output = "lwroad_tracks:traffic_light",
+	recipe = {
+		{"default:stone", "dye:red", "dye:green"},
+		{"", "group:stick", ""},
+		{"", "group:stick", ""},
 	},
 })
 

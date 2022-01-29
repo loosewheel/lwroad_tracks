@@ -1,0 +1,6 @@
+#    Maximal speed of the car in m/s (min=1, max=100)
+lwroad_tracks_speed_max (Maximal speed) int 10 1 100
+
+#    Maximal speed to which the driving player can accelerate the car by punching
+#    from inside the car. -1 will disable this feature. (min=-1, max=100)
+lwroad_tracks_punch_speed_max (Maximal punch speed) int 7 -1 100

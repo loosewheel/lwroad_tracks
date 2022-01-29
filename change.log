@@ -9,3 +9,11 @@ v0.1.1
 *	Improved car angle and height on slopes
 *	Less horn sound
 *	Tracks use dirt sounds
+
+
+v0.1.2
+*	Fixed bug with boosting.
+*	Rewrite to lose dependency on boost_cart.
+*	Added stop line.
+*	Added traffic light.
+*	Added api to add cars and tracks.
