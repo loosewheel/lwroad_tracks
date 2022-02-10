@@ -39,6 +39,7 @@ minetest.register_node ("lwroad_tracks:traffic_light_light", {
 minetest.register_node ("lwroad_tracks:traffic_light_green", {
 	description = S("Traffic Light"),
 	tiles = { "lwroads_traffic_light.png" },
+	use_texture_alpha = "clip",
 	paramtype = "light",
 	paramtype2 = "facedir",
 	drawtype = "mesh",
@@ -87,6 +88,7 @@ minetest.register_node ("lwroad_tracks:traffic_light_green", {
 minetest.register_node ("lwroad_tracks:traffic_light", {
 	description = S("Traffic Light"),
 	tiles = { "lwroads_traffic_light.png" },
+	use_texture_alpha = "clip",
 	wield_image = "lwroads_traffic_light_item.png",
 	inventory_image = "lwroads_traffic_light_item.png",
 	groups = { choppy = 2 },
