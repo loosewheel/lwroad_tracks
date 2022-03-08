@@ -1,4 +1,4 @@
-local utils, mod_storage = ...
+local utils = ...
 
 
 
@@ -13,8 +13,6 @@ elseif minetest.global_exists ("intllib") then
 else
    utils.S = function (s) return s end
 end
-
-local S = utils.S
 
 
 

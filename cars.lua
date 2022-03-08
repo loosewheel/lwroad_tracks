@@ -1,6 +1,3 @@
-local utils = ...
-local S = utils.S
-
 
 
 lwroad_tracks.register_car ("lwroad_tracks:white_car",

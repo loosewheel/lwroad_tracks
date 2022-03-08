@@ -63,12 +63,12 @@ end
 
 
 local function get_car_inventory (inventory_id)
-	local inv = nil
+	local dinv = nil
 
 	if inventory_id then
 		if not minetest.detached_inventories[inventory_id] then
-			inv = minetest.create_detached_inventory (inventory_id, {
-				allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			dinv = minetest.create_detached_inventory (inventory_id, {
+				allow_move = function (inv, from_list, from_index, to_list, to_index, count, player)
 					return count
 				end,
 				allow_put = function (inv, listname, index, stack, player)
@@ -88,15 +88,15 @@ local function get_car_inventory (inventory_id)
 				end,
 			})
 
-			if inv then
-				restore_car_inventory (inventory_id, inv)
+			if dinv then
+				restore_car_inventory (inventory_id, dinv)
 			end
 		else
-			inv = minetest.get_inventory ({ type = "detached", name = inventory_id })
+			dinv = minetest.get_inventory ({ type = "detached", name = inventory_id })
 		end
 	end
 
-	return inv
+	return dinv
 end
 
 
@@ -688,7 +688,7 @@ function lwroad_tracks.register_car (itemname, name, mesh, texture, texture_stop
 				return
 			end
 
-			local obj = nil
+			local obj
 
 			if utils.is_track (pointed_thing.under) then
 				obj = minetest.add_entity (pointed_thing.under, itemname)

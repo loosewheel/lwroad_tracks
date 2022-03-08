@@ -1,5 +1,4 @@
-local utils, mod_storage = ...
-local S = utils.S
+local utils = ...
 
 
 

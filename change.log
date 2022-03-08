@@ -21,3 +21,7 @@ v0.1.2
 
 v0.1.3
 *	Fixed use_texture_alpha = "clip" warning.
+
+
+v0.1.4
+*	Code cleanup.
